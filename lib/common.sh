@@ -78,7 +78,7 @@ fi
 
 # Check OS
 OS=$(awk -F= '/^ID=/ { print $2 }' /etc/os-release | tr -d '"')
-if [[ ! $OS =~ ^(centos|rhel|ubuntu)$ ]]; then
+if [[ ! $OS =~ ^(centos|rhel|ubuntu|ol)$ ]]; then
   echo "Unsupported OS"
   exit 1
 fi
