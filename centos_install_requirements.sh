@@ -48,11 +48,11 @@ if [ ! -d tripleo-repos ]; then
   git clone https://git.openstack.org/openstack/tripleo-repos
 fi
 pushd tripleo-repos
-sudo python setup.py install
+sudo -E python setup.py install
 popd
 
 # Needed to get a recent python-virtualbmc package
-sudo tripleo-repos current-tripleo
+sudo -E tripleo-repos current-tripleo
 
 # There are some packages which are newer in the tripleo repos
 sudo yum -y update
@@ -93,7 +93,7 @@ else
 fi
 
 # Install python packages not included as rpms
-sudo pip install \
+sudo -E pip install \
   lolcat \
   yq
 

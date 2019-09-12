@@ -72,11 +72,7 @@ function launch_minikube() {
     minikube start
     # The interface doesn't appear in the minikube VM with --live,
     # so just attach it and make it reboot.
-    sudo virsh attach-interface --domain minikube \
-        --model virtio --source provisioning \
-        --type network --config
-    minikube stop
-    minikube start
+
 }
 
 function launch_baremetal_operator() {
@@ -128,7 +124,7 @@ function launch_cluster_api() {
 }
 
 clone_repos
-configure_minikube
+
 launch_minikube
 launch_baremetal_operator
 apply_bm_hosts

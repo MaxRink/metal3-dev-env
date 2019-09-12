@@ -34,12 +34,12 @@ popd
 
 for IMAGE_VAR in IRONIC_IMAGE IRONIC_INSPECTOR_IMAGE ; do
     IMAGE=${!IMAGE_VAR}
-    sudo "${CONTAINER_RUNTIME}" pull "$IMAGE"
+    sudo -E "${CONTAINER_RUNTIME}" pull "$IMAGE"
 done
 
 for name in ironic ironic-inspector dnsmasq httpd mariadb; do
-    sudo "${CONTAINER_RUNTIME}" ps | grep -w "$name$" && sudo "${CONTAINER_RUNTIME}" kill $name
-    sudo "${CONTAINER_RUNTIME}" ps --all | grep -w "$name$" && sudo "${CONTAINER_RUNTIME}" rm $name -f
+    sudo -E "${CONTAINER_RUNTIME}" ps | grep -w "$name$" && sudo "${CONTAINER_RUNTIME}" kill $name
+    sudo -E "${CONTAINER_RUNTIME}" ps --all | grep -w "$name$" && sudo "${CONTAINER_RUNTIME}" rm $name -f
 done
 
 # set password for mariadb
@@ -48,11 +48,11 @@ mariadb_password="$(echo "$(date;hostname)"|sha256sum |cut -c-20)"
 
 if [[ "${CONTAINER_RUNTIME}" == "podman" ]]; then
   # Remove existing pod
-  if  sudo "${CONTAINER_RUNTIME}" pod exists ironic-pod ; then
-      sudo "${CONTAINER_RUNTIME}" pod rm ironic-pod -f
+  if  sudo -E "${CONTAINER_RUNTIME}" pod exists ironic-pod ; then
+      sudo -E "${CONTAINER_RUNTIME}" pod rm ironic-pod -f
   fi
   # Create pod
-  sudo "${CONTAINER_RUNTIME}" pod create -n ironic-pod
+  sudo -E "${CONTAINER_RUNTIME}" pod create -n ironic-pod
   POD_NAME="--pod ironic-pod"
 else
   POD_NAME=""
@@ -61,19 +61,19 @@ fi
 mkdir -p "$IRONIC_DATA_DIR"
 
 # Start dnsmasq, http, mariadb, and ironic containers using same image
-sudo "${CONTAINER_RUNTIME}" run -d --net host --privileged --name dnsmasq  ${POD_NAME} \
+sudo -E "${CONTAINER_RUNTIME}" run -d --net host --privileged --name dnsmasq  ${POD_NAME} \
      -v "$IRONIC_DATA_DIR":/shared --entrypoint /bin/rundnsmasq "${IRONIC_IMAGE}"
 
-sudo "${CONTAINER_RUNTIME}" run -d --net host --privileged --name httpd ${POD_NAME} \
+sudo -E "${CONTAINER_RUNTIME}" run -d --net host --privileged --name httpd ${POD_NAME} \
      -v "$IRONIC_DATA_DIR":/shared --entrypoint /bin/runhttpd "${IRONIC_IMAGE}"
 
-sudo "${CONTAINER_RUNTIME}" run -d --net host --privileged --name mariadb ${POD_NAME} \
+sudo -E "${CONTAINER_RUNTIME}" run -d --net host --privileged --name mariadb ${POD_NAME} \
      -v "$IRONIC_DATA_DIR":/shared --entrypoint /bin/runmariadb \
      --env MARIADB_PASSWORD="$mariadb_password" "${IRONIC_IMAGE}"
 
-sudo "${CONTAINER_RUNTIME}" run -d --net host --privileged --name ironic ${POD_NAME} \
+sudo -E "${CONTAINER_RUNTIME}" run -d --net host --privileged --name ironic ${POD_NAME} \
      --env MARIADB_PASSWORD="$mariadb_password" \
      -v "$IRONIC_DATA_DIR":/shared "${IRONIC_IMAGE}"
 
 # Start Ironic Inspector
-sudo "${CONTAINER_RUNTIME}" run -d --net host --privileged --name ironic-inspector ${POD_NAME} "${IRONIC_INSPECTOR_IMAGE}"
+sudo -E "${CONTAINER_RUNTIME}" run -d --net host --privileged --name ironic-inspector ${POD_NAME} "${IRONIC_INSPECTOR_IMAGE}"
