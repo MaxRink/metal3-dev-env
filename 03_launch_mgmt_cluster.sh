@@ -68,9 +68,9 @@ function configure_minikube() {
     minikube config set vm-driver kvm2
 }
 
-function launch_minikube() {
-    minikube start
-    # The interface doesn't appear in the minikube VM with --live,
+function launch_kind() {
+    kind create cluster --name=clusterapi
+    export KUBECONFIG="$(kind get kubeconfig-path --name="clusterapi")"    # The interface doesn't appear in the minikube VM with --live,
     # so just attach it and make it reboot.
 
 }
@@ -125,7 +125,7 @@ function launch_cluster_api() {
 
 clone_repos
 
-launch_minikube
+launch_kind
 launch_baremetal_operator
 apply_bm_hosts
 launch_cluster_api
