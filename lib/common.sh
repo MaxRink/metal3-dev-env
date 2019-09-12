@@ -93,21 +93,21 @@ fi
 # Check d_type support
 FSTYPE=$(df ${FILESYSTEM} --output=fstype | grep -v Type)
 
-case ${FSTYPE} in
-  'ext4'|'btrfs')
-  ;;
-  'xfs')
-    # shellcheck disable=SC2143
-    if [[ $(xfs_info ${FILESYSTEM} | grep -q "ftype=1") ]]; then
-      echo "Filesystem not supported"
-      exit 1
-    fi
-  ;;
-  *)
-    echo "Filesystem not supported"
-    exit 1
-  ;;
-esac
+#case ${FSTYPE} in
+#  'ext4'|'btrfs')
+#  ;;
+#  'xfs')
+#    # shellcheck disable=SC2143
+#    if [[ $(xfs_info ${FILESYSTEM} | grep -q "ftype=1") ]]; then
+#      echo "Filesystem not supported"
+#      exit 1
+#    fi
+#  ;;
+#  *)
+#    echo "Filesystem not supported"
+#    exit 1
+#  ;;
+#esac
 
 if [ ! -d "$WORKING_DIR" ]; then
   echo "Creating Working Dir"
